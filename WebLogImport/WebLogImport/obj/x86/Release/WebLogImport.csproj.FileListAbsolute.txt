@@ -1,0 +1,10 @@
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\bin\Release\WebLogImport.exe.config
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\bin\Release\WebLogImport.exe
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\bin\Release\WebLogImport.pdb
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.FormMain.resources
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.Properties.Resources.resources
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\GenerateResource.read.1.tlog
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\GenerateResource.write.1.tlog
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.exe
+C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.pdb
