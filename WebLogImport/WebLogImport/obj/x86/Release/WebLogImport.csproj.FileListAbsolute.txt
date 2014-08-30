@@ -8,3 +8,6 @@ C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\Ge
 C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\GenerateResource.write.1.tlog
 C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.exe
 C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.pdb
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\WebLogImport.exe.config
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.exe
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.pdb
