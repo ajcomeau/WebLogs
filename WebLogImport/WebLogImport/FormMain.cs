@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using WebLogImport.logDefTableAdapters;
+using Ionic.Zip;
 
 namespace WebLogImport
 {
@@ -58,7 +59,9 @@ namespace WebLogImport
 
             DataTable logTable = new DataTable();
             DataTable addTable = new DataTable();
-
+            ZipFile zipLog;
+            
+            
             // If the new file is being added to the records currently displayed, grab the datasource
             // for the grid for the merge.
 
@@ -86,7 +89,20 @@ namespace WebLogImport
                 {
                     if (Directory.Exists(txtFileName.Text))
                     {
+                        // First unzip any compressed files in the directory and delete the ZIP files.
+                        if (chkProcessZIP.Checked)
+                        {
+                            foreach (String zipFile in Directory.EnumerateFiles(txtFileName.Text, "*.zip"))
+                            {
+                                using (zipLog = new ZipFile(zipFile))
+                                {
+                                    zipLog.ExtractAll(txtFileName.Text, ExtractExistingFileAction.OverwriteSilently);
+                                }
+                                File.Delete(zipFile);
+                            }
+                        }
 
+                        // Now iterate through the text log files and import them.
                         foreach (String logFile in Directory.EnumerateFiles(txtFileName.Text, "*.log"))
                         {
                             // If the logTable has not been defined with columns yet, set it to the results of LoadFile.

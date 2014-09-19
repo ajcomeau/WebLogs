@@ -45,6 +45,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
+            this.chkProcessZIP = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgFile)).BeginInit();
             this.panel1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -174,7 +175,7 @@
             // ckAddToList
             // 
             this.ckAddToList.AutoSize = true;
-            this.ckAddToList.Location = new System.Drawing.Point(350, 73);
+            this.ckAddToList.Location = new System.Drawing.Point(501, 73);
             this.ckAddToList.Name = "ckAddToList";
             this.ckAddToList.Size = new System.Drawing.Size(146, 17);
             this.ckAddToList.TabIndex = 15;
@@ -198,11 +199,22 @@
             this.statusLabel1.Name = "statusLabel1";
             this.statusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // chkProcessZIP
+            // 
+            this.chkProcessZIP.AutoSize = true;
+            this.chkProcessZIP.Location = new System.Drawing.Point(324, 73);
+            this.chkProcessZIP.Name = "chkProcessZIP";
+            this.chkProcessZIP.Size = new System.Drawing.Size(171, 17);
+            this.chkProcessZIP.TabIndex = 17;
+            this.chkProcessZIP.Text = "Process compressed (ZIP) files";
+            this.chkProcessZIP.UseVisualStyleBackColor = true;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(861, 524);
+            this.Controls.Add(this.chkProcessZIP);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.ckAddToList);
             this.Controls.Add(this.panel1);
@@ -245,6 +257,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel1;
         private System.Windows.Forms.ToolTip toolTips;
+        private System.Windows.Forms.CheckBox chkProcessZIP;
     }
 }
 

@@ -11,3 +11,10 @@ C:\Users\Andrew\Desktop\Programming\WebLogImport\WebLogImport\obj\x86\Release\We
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\WebLogImport.exe.config
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.exe
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.pdb
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\WebLogImport.exe
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\WebLogImport.pdb
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csprojResolveAssemblyReference.cache
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.FormMain.resources
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.Properties.Resources.resources
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csproj.GenerateResource.Cache
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\Ionic.Zip.dll
