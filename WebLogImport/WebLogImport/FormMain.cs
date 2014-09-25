@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Configuration;
 using WebLogImport.logDefTableAdapters;
 using Ionic.Zip;
 
@@ -202,64 +204,125 @@ namespace WebLogImport
         {
 
             try
-            {
+            { 
+                // Get the connection string from the configuration and export the data grid to a datatable
+                string cs = ConfigurationManager.ConnectionStrings["SQLConnectionString"].ConnectionString;
+                DataTable dtLog = (DataTable)dgFile.DataSource;
+
                 if (dgFile.DataSource != null)
                 {
-                    // Use the strongly typed dataset (logDef.xsd) to define and save a recordset to the database.
-                    weblogsTableAdapter tbaLog = new weblogsTableAdapter();
-                    DataTable dtLog = (DataTable)dgFile.DataSource;
-                    logDef.weblogsDataTable dtExport = new logDef.weblogsDataTable();
-
-                    // For each row in the datagrid, add a new row to the weblogsDataTable and fill in the values.
+                    // Trim cookie field to 8000 characters
                     foreach (DataRow drLog in dtLog.Rows)
                     {
-                        logDef.weblogsRow rwExport = (logDef.weblogsRow)dtExport.NewRow();
-
-                        rwExport.date = DateTime.Parse(drLog.ItemArray[0].ToString());
-                        rwExport.time = drLog.ItemArray[1].ToString();
-                        rwExport._s_sitename = drLog.ItemArray[2].ToString();
-                        rwExport._s_computername = drLog.ItemArray[3].ToString();
-                        rwExport._s_ip = drLog.ItemArray[4].ToString();
-                        rwExport._cs_method = drLog.ItemArray[5].ToString();
-                        rwExport._cs_uri_stem = drLog.ItemArray[6].ToString();
-                        rwExport._cs_uri_query = drLog.ItemArray[7].ToString();
-                        rwExport._s_port = drLog.ItemArray[8].ToString();
-                        rwExport._cs_username = drLog.ItemArray[9].ToString();
-                        rwExport._c_ip = drLog.ItemArray[10].ToString();
-                        rwExport._cs_version = drLog.ItemArray[11].ToString();
-                        rwExport._cs_user_agent_ = drLog.ItemArray[12].ToString();
-                        // Max length for varchar field - 8000.
-                        if (drLog.ItemArray[12].ToString().Length > 8000)
-                            rwExport._cs_cookie_ = drLog.ItemArray[13].ToString().Substring(0, 8000);
-                        else
-                            rwExport._cs_cookie_ = drLog.ItemArray[13].ToString();
-                        rwExport._cs_referrer_ = drLog.ItemArray[14].ToString();
-                        rwExport._cs_host = drLog.ItemArray[15].ToString();
-                        rwExport._sc_status = drLog.ItemArray[16].ToString();
-                        rwExport._sc_substatus = drLog.ItemArray[17].ToString();
-                        rwExport._sc_win32_status = drLog.ItemArray[18].ToString();
-                        rwExport._sc_bytes = int.Parse(drLog.ItemArray[19].ToString());
-                        rwExport._cs_bytes = int.Parse(drLog.ItemArray[20].ToString());
-                        rwExport._time_taken = int.Parse(drLog.ItemArray[21].ToString());
-                        rwExport._site_name = drLog.ItemArray[22].ToString();
-
-                        dtExport.AddweblogsRow(rwExport);
+                        if (drLog.ItemArray[13].ToString().Length > 8000)
+                            drLog.ItemArray[13] = drLog.ItemArray[13].ToString().Substring(0, 8000);
                     }
 
-                    statusLabel1.Text = "Saving " + dtExport.Rows.Count + " log records ...";
+                    // Set status message
+                    statusLabel1.Text = "Saving " + dtLog.Rows.Count + " log records ...";
                     statusLabel1.ForeColor = Color.Red;
                     statusStrip1.Refresh();
 
-                    // Update SQL Server with the data table.
-                    tbaLog.Update(dtExport);
+                    using (SqlConnection sqlConn = new SqlConnection(cs))
+                    {
+                        // Map the datatable columns to the SQL table columns and dump the records using SQLBulkCopy.
+                        using (SqlBulkCopy sqlCopy = new SqlBulkCopy(cs))
+                        {
+                            sqlCopy.DestinationTableName = "Sample.dbo.weblogs";
+                            sqlCopy.ColumnMappings.Add("date", "date");
+                            sqlCopy.ColumnMappings.Add("time", "time");
+                            sqlCopy.ColumnMappings.Add("s-sitename", "s-sitename");
+                            sqlCopy.ColumnMappings.Add("s-computername", "s-computername");
+                            sqlCopy.ColumnMappings.Add("s-ip", "s-ip");
+                            sqlCopy.ColumnMappings.Add("cs-method", "cs-method");
+                            sqlCopy.ColumnMappings.Add("cs-uri-stem", "cs-uri-stem");
+                            sqlCopy.ColumnMappings.Add("cs-uri-query", "cs-uri-query");
+                            sqlCopy.ColumnMappings.Add("s-port", "s-port");
+                            sqlCopy.ColumnMappings.Add("cs-username", "cs-username");
+                            sqlCopy.ColumnMappings.Add("c-ip", "c-ip");
+                            sqlCopy.ColumnMappings.Add("cs-version", "cs-version");
+                            sqlCopy.ColumnMappings.Add("cs(User-Agent)", "cs(user-agent)");
+                            sqlCopy.ColumnMappings.Add("cs(Cookie)", "cs(cookie)");
+                            sqlCopy.ColumnMappings.Add("cs(Referer)", "cs(referrer)");
+                            sqlCopy.ColumnMappings.Add("cs-host", "cs-host");
+                            sqlCopy.ColumnMappings.Add("sc-status", "sc-status");
+                            sqlCopy.ColumnMappings.Add("sc-substatus", "sc-substatus");
+                            sqlCopy.ColumnMappings.Add("sc-win32-status", "sc-win32-status");
+                            sqlCopy.ColumnMappings.Add("sc-bytes", "sc-bytes");
+                            sqlCopy.ColumnMappings.Add("cs-bytes", "cs-bytes");
+                            sqlCopy.ColumnMappings.Add("time-taken", "time-taken");
+                            sqlCopy.ColumnMappings.Add("SiteName", "site-name");
+                            sqlCopy.WriteToServer(dtLog);
+                        }
+                    }
 
-                    statusLabel1.Text = dtExport.Rows.Count + " log records saved.";
+                    // Set the status message.
+                    statusLabel1.Text = dtLog.Rows.Count + " log records saved.";
                     statusLabel1.ForeColor = Color.Black;
-                    MessageBox.Show(dtExport.Rows.Count + " log records saved.", "Records saved.");
+                    MessageBox.Show(dtLog.Rows.Count + " log records saved.", "Records saved.");
 
                     // Clear the datagrid.
                     dgFile.DataSource = null;
                 }
+
+
+                // PREVIOUS METHOD - Use the strongly typed dataset (logDef.xsd) to define and save a recordset to the database.
+                //if (dgFile.DataSource != null)
+                //{
+                //    weblogsTableAdapter tbaLog = new weblogsTableAdapter();
+                //    // DataTable dtLog = (DataTable)dgFile.DataSource;
+                //    logDef.weblogsDataTable dtExport = new logDef.weblogsDataTable();
+
+                //    // For each row in the datagrid, add a new row to the weblogsDataTable and fill in the values.
+                //    foreach (DataRow drLog in dtLog.Rows)
+                //    {
+                //        logDef.weblogsRow rwExport = (logDef.weblogsRow)dtExport.NewRow();
+
+                //        rwExport.date = DateTime.Parse(drLog.ItemArray[0].ToString());
+                //        rwExport.time = drLog.ItemArray[1].ToString();
+                //        rwExport._s_sitename = drLog.ItemArray[2].ToString();
+                //        rwExport._s_computername = drLog.ItemArray[3].ToString();
+                //        rwExport._s_ip = drLog.ItemArray[4].ToString();
+                //        rwExport._cs_method = drLog.ItemArray[5].ToString();
+                //        rwExport._cs_uri_stem = drLog.ItemArray[6].ToString();
+                //        rwExport._cs_uri_query = drLog.ItemArray[7].ToString();
+                //        rwExport._s_port = drLog.ItemArray[8].ToString();
+                //        rwExport._cs_username = drLog.ItemArray[9].ToString();
+                //        rwExport._c_ip = drLog.ItemArray[10].ToString();
+                //        rwExport._cs_version = drLog.ItemArray[11].ToString();
+                //        rwExport._cs_user_agent_ = drLog.ItemArray[12].ToString();
+                //        // Max length for varchar field - 8000.
+                //        if (drLog.ItemArray[12].ToString().Length > 8000)
+                //            rwExport._cs_cookie_ = drLog.ItemArray[13].ToString().Substring(0, 8000);
+                //        else
+                //            rwExport._cs_cookie_ = drLog.ItemArray[13].ToString();
+                //        rwExport._cs_referrer_ = drLog.ItemArray[14].ToString();
+                //        rwExport._cs_host = drLog.ItemArray[15].ToString();
+                //        rwExport._sc_status = drLog.ItemArray[16].ToString();
+                //        rwExport._sc_substatus = drLog.ItemArray[17].ToString();
+                //        rwExport._sc_win32_status = drLog.ItemArray[18].ToString();
+                //        rwExport._sc_bytes = int.Parse(drLog.ItemArray[19].ToString());
+                //        rwExport._cs_bytes = int.Parse(drLog.ItemArray[20].ToString());
+                //        rwExport._time_taken = int.Parse(drLog.ItemArray[21].ToString());
+                //        rwExport._site_name = drLog.ItemArray[22].ToString();
+
+                //        dtExport.AddweblogsRow(rwExport);
+                //    }
+
+                //    statusLabel1.Text = "Saving " + dtExport.Rows.Count + " log records ...";
+                //    statusLabel1.ForeColor = Color.Red;
+                //    statusStrip1.Refresh();
+
+                //    // Update SQL Server with the data table.
+                //    tbaLog.Update(dtExport);
+
+                //    statusLabel1.Text = dtExport.Rows.Count + " log records saved.";
+                //    statusLabel1.ForeColor = Color.Black;
+                //    MessageBox.Show(dtExport.Rows.Count + " log records saved.", "Records saved.");
+
+                //    // Clear the datagrid.
+                //    dgFile.DataSource = null;
+                //}
             }
             catch(Exception ex)
             {
