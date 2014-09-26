@@ -33,7 +33,7 @@ namespace WebLogImport
                 if (rbFile.Checked)
                 {
                     OpenFileDialog fileDialog = new OpenFileDialog();
-                    fileDialog.Filter = "log files (*.log)|*.log|All files (*.*)|*.*";
+                    fileDialog.Filter = "log files (*.log)|*.log|Zip files (*.zip)|*.zip";
 
                     if (fileDialog.ShowDialog() == DialogResult.OK)
                     {
@@ -62,6 +62,7 @@ namespace WebLogImport
             DataTable logTable = new DataTable();
             DataTable addTable = new DataTable();
             ZipFile zipLog;
+            string logFile = "";
             
             
             // If the new file is being added to the records currently displayed, grab the datasource
@@ -72,24 +73,40 @@ namespace WebLogImport
                 if (ckAddToList.Checked && dgFile.DataSource != null)
                     logTable = (DataTable)dgFile.DataSource;
 
-                if (rbFile.Checked)
-                {
-                    if (txtFileName.TextLength > 0 && File.Exists(txtFileName.Text))
+                if (rbFile.Checked && txtFileName.Text.Length > 0)
+                {                    
+                    logFile = txtFileName.Text;
+
+                    // If a ZIP file is selected, unzip it.
+                    if (logFile.EndsWith(".zip"))
+                    {
+                        using (zipLog = new ZipFile(logFile))
+                        {
+                            zipLog.ExtractAll(Path.GetDirectoryName(logFile), ExtractExistingFileAction.OverwriteSilently);                            
+                        }
+                        File.Delete(logFile);
+                        
+                        // Assume that the log is named the same as the ZIP but with a different extension.
+                        logFile = logFile.Substring(0, logFile.Length - 3) + "log";
+                    }
+                    
+                    // Now process the file.
+                    if (File.Exists(logFile))
                     {
                         // If the logTable has not been defined with columns yet, set it to the results of LoadFile.
                         // Otherwise, use addTable and merge it with logFile.
                         if (logTable.Columns.Count == 0)
-                            logTable = WebLogImport.FormMain.LoadFile(txtFileName.Text, textDomain.Text);
+                            logTable = WebLogImport.FormMain.LoadFile(logFile, textDomain.Text);
                         else
                         {
-                            addTable = WebLogImport.FormMain.LoadFile(txtFileName.Text, textDomain.Text);
+                            addTable = WebLogImport.FormMain.LoadFile(logFile, textDomain.Text);
                             logTable.Merge(addTable, true);
                         }
                     }
                 }
                 else
                 {
-                    if (Directory.Exists(txtFileName.Text))
+                    if (txtFileName.Text.Length > 0 && Directory.Exists(txtFileName.Text))
                     {
                         // First unzip any compressed files in the directory and delete the ZIP files.
                         if (chkProcessZIP.Checked)
@@ -105,15 +122,15 @@ namespace WebLogImport
                         }
 
                         // Now iterate through the text log files and import them.
-                        foreach (String logFile in Directory.EnumerateFiles(txtFileName.Text, "*.log"))
+                        foreach (String logFileEntry in Directory.EnumerateFiles(txtFileName.Text, "*.log"))
                         {
                             // If the logTable has not been defined with columns yet, set it to the results of LoadFile.
                             // Otherwise, use addTable and merge it with logFile.
                             if (logTable.Columns.Count == 0)
-                                logTable = WebLogImport.FormMain.LoadFile(logFile, textDomain.Text);
+                                logTable = WebLogImport.FormMain.LoadFile(logFileEntry, textDomain.Text);
                             else
                             {
-                                addTable = WebLogImport.FormMain.LoadFile(logFile, textDomain.Text);
+                                addTable = WebLogImport.FormMain.LoadFile(logFileEntry, textDomain.Text);
                                 logTable.Merge(addTable, true);
                             }
                         }
@@ -202,71 +219,76 @@ namespace WebLogImport
 
         private void cmdSave_Click(object sender, EventArgs e)
         {
-
             try
-            { 
-                // Get the connection string from the configuration and export the data grid to a datatable
+            {                
                 string cs = ConfigurationManager.ConnectionStrings["SQLConnectionString"].ConnectionString;
                 DataTable dtLog = (DataTable)dgFile.DataSource;
 
-                if (dgFile.DataSource != null)
+                if (cs.Length > 0)
                 {
-                    // Trim cookie field to 8000 characters
-                    foreach (DataRow drLog in dtLog.Rows)
+                    if (dgFile.DataSource != null)
                     {
-                        if (drLog.ItemArray[13].ToString().Length > 8000)
-                            drLog.ItemArray[13] = drLog.ItemArray[13].ToString().Substring(0, 8000);
-                    }
-
-                    // Set status message
-                    statusLabel1.Text = "Saving " + dtLog.Rows.Count + " log records ...";
-                    statusLabel1.ForeColor = Color.Red;
-                    statusStrip1.Refresh();
-
-                    using (SqlConnection sqlConn = new SqlConnection(cs))
-                    {
-                        // Map the datatable columns to the SQL table columns and dump the records using SQLBulkCopy.
-                        using (SqlBulkCopy sqlCopy = new SqlBulkCopy(cs))
+                        // Trim cookie field to 8000 characters
+                        foreach (DataRow drLog in dtLog.Rows)
                         {
-                            sqlCopy.DestinationTableName = "Sample.dbo.weblogs";
-                            sqlCopy.ColumnMappings.Add("date", "date");
-                            sqlCopy.ColumnMappings.Add("time", "time");
-                            sqlCopy.ColumnMappings.Add("s-sitename", "s-sitename");
-                            sqlCopy.ColumnMappings.Add("s-computername", "s-computername");
-                            sqlCopy.ColumnMappings.Add("s-ip", "s-ip");
-                            sqlCopy.ColumnMappings.Add("cs-method", "cs-method");
-                            sqlCopy.ColumnMappings.Add("cs-uri-stem", "cs-uri-stem");
-                            sqlCopy.ColumnMappings.Add("cs-uri-query", "cs-uri-query");
-                            sqlCopy.ColumnMappings.Add("s-port", "s-port");
-                            sqlCopy.ColumnMappings.Add("cs-username", "cs-username");
-                            sqlCopy.ColumnMappings.Add("c-ip", "c-ip");
-                            sqlCopy.ColumnMappings.Add("cs-version", "cs-version");
-                            sqlCopy.ColumnMappings.Add("cs(User-Agent)", "cs(user-agent)");
-                            sqlCopy.ColumnMappings.Add("cs(Cookie)", "cs(cookie)");
-                            sqlCopy.ColumnMappings.Add("cs(Referer)", "cs(referrer)");
-                            sqlCopy.ColumnMappings.Add("cs-host", "cs-host");
-                            sqlCopy.ColumnMappings.Add("sc-status", "sc-status");
-                            sqlCopy.ColumnMappings.Add("sc-substatus", "sc-substatus");
-                            sqlCopy.ColumnMappings.Add("sc-win32-status", "sc-win32-status");
-                            sqlCopy.ColumnMappings.Add("sc-bytes", "sc-bytes");
-                            sqlCopy.ColumnMappings.Add("cs-bytes", "cs-bytes");
-                            sqlCopy.ColumnMappings.Add("time-taken", "time-taken");
-                            sqlCopy.ColumnMappings.Add("SiteName", "site-name");
-                            sqlCopy.WriteToServer(dtLog);
+                            if (drLog.ItemArray[13].ToString().Length > 8000)
+                                drLog.ItemArray[13] = drLog.ItemArray[13].ToString().Substring(0, 8000);
                         }
+
+                        // Set status message
+                        statusLabel1.Text = "Saving " + dtLog.Rows.Count + " log records ...";
+                        statusLabel1.ForeColor = Color.Red;
+                        statusStrip1.Refresh();
+
+                        using (SqlConnection sqlConn = new SqlConnection(cs))
+                        {
+                            // Map the datatable columns to the SQL table columns and dump the records using SQLBulkCopy.
+                            using (SqlBulkCopy sqlCopy = new SqlBulkCopy(cs))
+                            {
+                                sqlCopy.DestinationTableName = "Sample.dbo.weblogs";
+                                sqlCopy.ColumnMappings.Add("date", "date");
+                                sqlCopy.ColumnMappings.Add("time", "time");
+                                sqlCopy.ColumnMappings.Add("s-sitename", "s-sitename");
+                                sqlCopy.ColumnMappings.Add("s-computername", "s-computername");
+                                sqlCopy.ColumnMappings.Add("s-ip", "s-ip");
+                                sqlCopy.ColumnMappings.Add("cs-method", "cs-method");
+                                sqlCopy.ColumnMappings.Add("cs-uri-stem", "cs-uri-stem");
+                                sqlCopy.ColumnMappings.Add("cs-uri-query", "cs-uri-query");
+                                sqlCopy.ColumnMappings.Add("s-port", "s-port");
+                                sqlCopy.ColumnMappings.Add("cs-username", "cs-username");
+                                sqlCopy.ColumnMappings.Add("c-ip", "c-ip");
+                                sqlCopy.ColumnMappings.Add("cs-version", "cs-version");
+                                sqlCopy.ColumnMappings.Add("cs(User-Agent)", "cs(user-agent)");
+                                sqlCopy.ColumnMappings.Add("cs(Cookie)", "cs(cookie)");
+                                sqlCopy.ColumnMappings.Add("cs(Referer)", "cs(referrer)");
+                                sqlCopy.ColumnMappings.Add("cs-host", "cs-host");
+                                sqlCopy.ColumnMappings.Add("sc-status", "sc-status");
+                                sqlCopy.ColumnMappings.Add("sc-substatus", "sc-substatus");
+                                sqlCopy.ColumnMappings.Add("sc-win32-status", "sc-win32-status");
+                                sqlCopy.ColumnMappings.Add("sc-bytes", "sc-bytes");
+                                sqlCopy.ColumnMappings.Add("cs-bytes", "cs-bytes");
+                                sqlCopy.ColumnMappings.Add("time-taken", "time-taken");
+                                sqlCopy.ColumnMappings.Add("SiteName", "site-name");
+                                sqlCopy.WriteToServer(dtLog);
+                            }
+                        }
+
+                        // Set the status message.
+                        statusLabel1.Text = dtLog.Rows.Count + " log records saved.";
+                        statusLabel1.ForeColor = Color.Black;
+                        MessageBox.Show(dtLog.Rows.Count + " log records saved.", "Records saved.");
+
+                        // Clear the datagrid.
+                        dgFile.DataSource = null;
                     }
-
-                    // Set the status message.
-                    statusLabel1.Text = dtLog.Rows.Count + " log records saved.";
-                    statusLabel1.ForeColor = Color.Black;
-                    MessageBox.Show(dtLog.Rows.Count + " log records saved.", "Records saved.");
-
-                    // Clear the datagrid.
-                    dgFile.DataSource = null;
+                }
+                else
+                {
+                    MessageBox.Show("No connection information found. Please enter the 'SQLConnectionString' connection string for a SQL Server database in the app.config file and try again.", "No connection found ...");
                 }
 
-
-                // PREVIOUS METHOD - Use the strongly typed dataset (logDef.xsd) to define and save a recordset to the database.
+                // PREVIOUS METHOD - Use the typed dataset (logDef.xsd) to define and save a recordset to the database.
+                // Can be restored for saving to databases other than SQL Server.
                 //if (dgFile.DataSource != null)
                 //{
                 //    weblogsTableAdapter tbaLog = new weblogsTableAdapter();

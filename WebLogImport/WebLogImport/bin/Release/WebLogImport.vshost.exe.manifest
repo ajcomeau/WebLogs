@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WebLogImport.exe" size="61440">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WebLogImport.exe" size="61952">
       <assemblyIdentity name="WebLogImport" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>rMAp4piijb9kG3JeHMZOTlUkgwc=</dsig:DigestValue>
+        <dsig:DigestValue>eWpL0+l3uAZ7cpyIu6aCP+cnz0s=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

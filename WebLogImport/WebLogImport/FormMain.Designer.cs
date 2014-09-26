@@ -97,13 +97,13 @@
             this.dgFile.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgFile.Location = new System.Drawing.Point(12, 113);
             this.dgFile.Name = "dgFile";
-            this.dgFile.Size = new System.Drawing.Size(837, 346);
+            this.dgFile.Size = new System.Drawing.Size(837, 352);
             this.dgFile.TabIndex = 4;
             // 
             // cmdSave
             // 
             this.cmdSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdSave.Location = new System.Drawing.Point(721, 465);
+            this.cmdSave.Location = new System.Drawing.Point(721, 471);
             this.cmdSave.Name = "cmdSave";
             this.cmdSave.Size = new System.Drawing.Size(128, 23);
             this.cmdSave.TabIndex = 5;

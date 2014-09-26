@@ -1,0 +1,2 @@
+[Enter your specific SQL connection string below, preceded by '###'.]
+###Data Source=COMEAU-DESKTOP;Initial Catalog=Sample;Integrated Security=False

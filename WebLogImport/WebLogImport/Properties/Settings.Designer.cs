@@ -26,7 +26,6 @@ namespace WebLogImport.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=COMEAU-DESKTOP;Initial Catalog=Sample;Integrated Security=True")]
         public string SQLConnectionString {
             get {
                 return ((string)(this["SQLConnectionString"]));
