@@ -61,17 +61,17 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>FesxM8PZYD1xn1NNu03wMB1ezj4=</dsig:DigestValue>
+        <dsig:DigestValue>rV+Afi8ehQolBX3TmOrqlJHw9pA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="WebLogImport.exe.config" size="374">
+  <file name="WebLogImport.exe.config" size="300">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>g048Jd52rwqSD2ITXrsNxO5dbtA=</dsig:DigestValue>
+      <dsig:DigestValue>uP35XJJFd3IxZobo13wKUJMCIVI=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

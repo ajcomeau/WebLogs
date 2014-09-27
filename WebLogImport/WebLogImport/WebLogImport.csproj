@@ -86,6 +86,7 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="io.cs" />
     <Compile Include="logDef.cs">
       <DependentUpon>logDef.xsd</DependentUpon>
       <SubType>Component</SubType>

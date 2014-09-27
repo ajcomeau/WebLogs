@@ -22,3 +22,4 @@ C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\W
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.exe.manifest
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.application
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\app.config
+C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csprojResolveAssemblyReference.cache
