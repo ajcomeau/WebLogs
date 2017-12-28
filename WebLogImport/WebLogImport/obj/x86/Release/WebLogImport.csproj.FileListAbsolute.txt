@@ -23,3 +23,10 @@ C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Relea
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.application
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\bin\Release\app.config
 C:\Users\Andrew\Documents\GitHub\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csprojResolveAssemblyReference.cache
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csprojResolveAssemblyReference.cache
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.FormMain.resources
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.Properties.Resources.resources
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csproj.GenerateResource.Cache
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.csproj.CoreCompileInputs.cache
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.exe
+C:\Users\acome\Desktop\WebLogs\WebLogImport\WebLogImport\obj\x86\Release\WebLogImport.pdb

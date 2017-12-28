@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.IO;
 using System.Configuration;
 
@@ -71,7 +72,72 @@ namespace WebLogImport
             }
         }
 
-        public static bool SaveLogData(DataTable LogDataTable)
+        public static bool SaveLogDataSQLite(DataTable LogDataTable)
+        {
+            // Not efficient for large numbers of records but leaving in as a demo.
+
+            try
+            {
+                int result;
+                string cs = ConfigurationManager.ConnectionStrings["SQLiteConnectionString"].ConnectionString;
+
+                string sqlText = "INSERT INTO [weblogs] ([date], [time], [s-sitename], [s-computername], [s-ip], [cs-method], [cs-uri-stem], " +
+                    "[cs-uri-query], [s-port], [cs-username], [c-ip], [cs-version], [cs(User-Agent)], [cs(Cookie)], [cs(Referrer)], [cs-host], " +
+                    "[sc-status], [sc-substatus], [sc-win32-status], [sc-bytes], [cs-bytes], [time-taken], [site-name]) " +
+                    "VALUES (@date, @time, @ssitename, @scomputername, @sip, @csmethod, @csuristem, " +
+                    "@csuriquery, @sport, @csusername, @cip, @csversion, @csUserAgent, @csCookie, @csreferrer, @cshost, " +
+                    "@scstatus, @scsubstatus, @scwin32status, @scbytes, @csbytes, @timetaken, @sitename);";
+                SQLiteConnection liteConn = new SQLiteConnection(cs);
+                SQLiteCommand liteCmd;
+                liteConn.Open();                
+
+                // Export row
+                foreach (DataRow drLog in LogDataTable.Rows)
+                {
+                    if (drLog.ItemArray[13].ToString().Length > 8000)
+                        drLog.ItemArray[13] = drLog.ItemArray[13].ToString().Substring(0, 8000);
+
+                    liteCmd = new SQLiteCommand(sqlText, liteConn);
+                    liteCmd.CommandType = CommandType.Text;
+                    liteCmd.Parameters.AddWithValue("@date", drLog["date"].ToString());
+                    liteCmd.Parameters.AddWithValue("@time", drLog["time"].ToString());
+                    liteCmd.Parameters.AddWithValue("@ssitename", drLog["s-sitename"].ToString());
+                    liteCmd.Parameters.AddWithValue("@scomputername", drLog["s-computername"].ToString());
+                    liteCmd.Parameters.AddWithValue("@sip", drLog["s-ip"].ToString());
+                    liteCmd.Parameters.AddWithValue("@csmethod", drLog["cs-method"].ToString());
+                    liteCmd.Parameters.AddWithValue("@csuristem", drLog["cs-uri-stem"].ToString());
+                    liteCmd.Parameters.AddWithValue("@csuriquery", drLog["cs-uri-query"]);
+                    liteCmd.Parameters.AddWithValue("@sport", drLog["s-port"]);
+                    liteCmd.Parameters.AddWithValue("@csusername", drLog["cs-username"]);
+                    liteCmd.Parameters.AddWithValue("@cip", drLog["c-ip"]);
+                    liteCmd.Parameters.AddWithValue("@csversion", drLog["cs-version"]);
+                    liteCmd.Parameters.AddWithValue("@csUserAgent", drLog["cs(User-Agent)"]);
+                    liteCmd.Parameters.AddWithValue("@csCookie", drLog["cs(Cookie)"]);
+                    liteCmd.Parameters.AddWithValue("@csreferrer", drLog["cs(referer)"]);
+                    liteCmd.Parameters.AddWithValue("@cshost", drLog["cs-host"]);
+                    liteCmd.Parameters.AddWithValue("@scstatus", drLog["sc-status"]);
+                    liteCmd.Parameters.AddWithValue("@scsubstatus", drLog["sc-substatus"]);
+                    liteCmd.Parameters.AddWithValue("@scwin32status", drLog["sc-win32-status"]);
+                    liteCmd.Parameters.AddWithValue("@scbytes", drLog["sc-bytes"]);
+                    liteCmd.Parameters.AddWithValue("@csbytes", drLog["cs-bytes"]);
+                    liteCmd.Parameters.AddWithValue("@timetaken", drLog["time-taken"]);
+                    liteCmd.Parameters.AddWithValue("@sitename", drLog["SiteName"]);
+
+                    result = liteCmd.ExecuteNonQuery();
+                    
+                }
+
+                liteConn.Close();               
+               
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error saving records to SQLite database.", ex);
+            }
+        }
+
+        public static bool SaveLogDataSQLServer(DataTable LogDataTable)
         {
             try
             {
@@ -121,7 +187,7 @@ namespace WebLogImport
             }
             catch (Exception ex)
             {
-                throw new Exception("Error saving records.", ex);
+                throw new Exception("Error saving records to SQL Server.", ex);
             }
         }
     }

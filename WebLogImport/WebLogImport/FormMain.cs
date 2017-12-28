@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.IO;
 using WebLogImport;
-using WebLogImport.logDefTableAdapters;
 using Ionic.Zip;
 
 namespace WebLogImport
@@ -64,7 +63,6 @@ namespace WebLogImport
             DataTable addTable = new DataTable();
             ZipFile zipLog;
             string logFile = "";
-            
             
             // If the new file is being added to the records currently displayed, grab the datasource
             // for the grid for the merge.
@@ -160,28 +158,37 @@ namespace WebLogImport
             try
             {
                 DataTable dtLog = (DataTable)dgFile.DataSource;
+                bool result = false;
 
+                // Set status message
+                statusLabel1.Text = "Saving " + dtLog.Rows.Count + " log records ...";
+                statusLabel1.ForeColor = Color.Red;
+                statusStrip1.Refresh();
+
+                // SQL Server is prioritized for speed.
                 if (ConfigurationManager.ConnectionStrings["SQLConnectionString"].ConnectionString.Length > 0)
                 {
-                    // Set status message
-                    statusLabel1.Text = "Saving " + dtLog.Rows.Count + " log records ...";
-                    statusLabel1.ForeColor = Color.Red;
-                    statusStrip1.Refresh();
-
-                    if (IO.SaveLogData(dtLog))
-                    {
-                        // Set the status message.
-                        statusLabel1.Text = dtLog.Rows.Count + " log records saved.";
-                        statusLabel1.ForeColor = Color.Black;
-                        MessageBox.Show(dtLog.Rows.Count + " log records saved.", "Records saved.");
-                        // Clear the datagrid.
-                        dgFile.DataSource = null;
-                    }
+                    result = IO.SaveLogDataSQLServer(dtLog);
+                }
+                else if (ConfigurationManager.ConnectionStrings["SQLiteConnectionString"].ConnectionString.Length > 0)
+                {
+                    result = IO.SaveLogDataSQLite(dtLog);
                 }
                 else
                 {
-                    MessageBox.Show("No connection information was found. Please update the confuguration information with a connection string for a SQL Server database.");
+                    MessageBox.Show("No database connection was found. Please update the configuration information with a connection string for a SQL Server or SQLite database.");
                 }
+
+                if (result == true)
+                { 
+                    // Set the status message.
+                    statusLabel1.Text = dtLog.Rows.Count + " log records saved.";
+                    statusLabel1.ForeColor = Color.Black;
+                    MessageBox.Show(dtLog.Rows.Count + " log records saved.", "Records saved.");
+                    // Clear the datagrid.
+                    dgFile.DataSource = null;
+                }
+
             }
             catch(Exception ex)
             {

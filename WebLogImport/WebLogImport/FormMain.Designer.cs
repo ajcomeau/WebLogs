@@ -97,7 +97,7 @@
             this.dgFile.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgFile.Location = new System.Drawing.Point(12, 113);
             this.dgFile.Name = "dgFile";
-            this.dgFile.Size = new System.Drawing.Size(837, 352);
+            this.dgFile.Size = new System.Drawing.Size(837, 348);
             this.dgFile.TabIndex = 4;
             // 
             // cmdSave
