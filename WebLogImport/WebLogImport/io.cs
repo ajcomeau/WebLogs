@@ -21,6 +21,7 @@ namespace WebLogImport
             List<string> titleList;
             string[] splitLine;
             bool colDefined = false;
+            int columnCount = 0;
 
             try
             {
@@ -28,13 +29,15 @@ namespace WebLogImport
                 // Look for the first row with the field names to get Get column count and titles for the table.
 
                 readLog = new StreamReader(FileName);
-                while (!colDefined)
+                while (!colDefined && readLog.Peek() >= 0)
                 {
-                    fileLine = readLog.ReadLine();
+                    fileLine = readLog.ReadLine().Replace(" - - ", " "); // Remove blanks from Apachie Log.
+                    if (columnCount == 0) { columnCount = fileLine.Split(' ').Length; };
                     if (fileLine.StartsWith("#Fields: "))
                     {
                         fileLine = fileLine.Remove(0, 9);
                         titleList = fileLine.Split(' ').ToList();
+                        
                         foreach (string title in titleList)
                         {
                             dtLog.Columns.Add(title);
@@ -46,20 +49,36 @@ namespace WebLogImport
 
                 readLog.Close();
 
+                // If the columns have not been defined. Just add 
+                // one for each field found.
+
+                if (!colDefined)
+                {
+                    for (int x = 1; x <= columnCount + 1; x++)
+                    {
+                        dtLog.Columns.Add("Field" + x);
+                    }
+                }
+
+
                 // Reopen the file and get the records.
 
                 readLog = new StreamReader(FileName);
 
                 while (readLog.Peek() >= 0)
                 {
-                    fileLine = readLog.ReadLine();
+                    fileLine = readLog.ReadLine().Replace(" - - ", " "); ;
                     if (!fileLine.StartsWith("#"))
                     {
                         fileLine += " " + DomainName;
                         splitLine = fileLine.Split(' ');
                         dtLogRow = dtLog.NewRow();
-                        dtLogRow.ItemArray = splitLine;
-                        dtLog.Rows.Add(dtLogRow);
+                        // Reject any rows with too many columns.
+                        if (splitLine.GetLength(0) == dtLog.Columns.Count)
+                        {
+                            dtLogRow.ItemArray = splitLine;
+                            dtLog.Rows.Add(dtLogRow);
+                        }
                     }
                 }
 
